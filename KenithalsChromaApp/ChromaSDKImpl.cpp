@@ -2,6 +2,9 @@
 
 #include "stdafx.h"
 #include "ChromaSDKImpl.h"
+#include <string>
+#include <fstream>
+#include <iostream>
 
 #ifdef _WIN64
 #define CHROMASDKDLL        _T("RzChromaSDK64.dll")
@@ -43,12 +46,16 @@ DELETEEFFECT DeleteEffect = NULL;
 QUERYDEVICE QueryDevice = NULL;
 
 bool Anim = false, numPadBG = true, numPadBars = false, mouseOn = true, WASD = false, NUMS = false;
-UINT health = 0, power = 0, bgBrightness = 100, charR = 0, charG = 0, charB = 0, charBrightness = 50;
+UINT health = 0, power = 0, bgBrightness = 25, staticR = 0, staticG = 0, staticB = 0, charBrightness = 0, dynamicR = 0, dynamicG = 0, dynamicB = 0;
 CChromaSDKImpl::BGEffects currentBGEffect = CChromaSDKImpl::Spectrum;
+CChromaSDKImpl::KBEffects currentKBEffect = CChromaSDKImpl::Off;
+std::string path;
+
+CChromaSDKImpl instance;
 
 DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 {
-	int r = 255, g = 255, b = 255, displayR, displayG, displayB, charDisplayR, charDisplayG, charDisplayB;
+	int r = 0, g = 0, b = 0, displayR, displayG, displayB, staticDisplayR, staticDisplayG, staticDisplayB, dynamicDisplayR, dynamicDisplayG, dynamicDisplayB;
 
 	while (Anim)
 	{
@@ -57,14 +64,15 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 			RZRESULT Result = RZRESULT_INVALID;
 			ChromaSDK::Keyboard::CUSTOM_KEY_EFFECT_TYPE Effect = {};
 
-			if (currentBGEffect == CChromaSDKImpl::Spectrum)
+			switch(currentBGEffect)
 			{
+			case CChromaSDKImpl::Spectrum:
 				displayR = (int)((bgBrightness / 100.0) * r);
 				displayG = (int)((bgBrightness / 100.0) * g);
 				displayB = (int)((bgBrightness / 100.0) * b);
 
 				if (r == 255 && g > 0 && b > 0)
-					g = b -= SPECTRUM_CHANGE_RATE;
+					g = b -= SPECTRUM_CHANGE_RATE * 2;
 				else if (r == 255 && g < 255 && b == 0)
 					g += SPECTRUM_CHANGE_RATE;
 				else if (r > 0 && g == 255 && b == 0)
@@ -77,6 +85,8 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 					r += SPECTRUM_CHANGE_RATE;
 				else if (r == 255 && g == 0 && b > 0)
 					b -= SPECTRUM_CHANGE_RATE;
+				else
+					r += SPECTRUM_CHANGE_RATE * 2;
 
 				if (r < 0) r = 0;
 				if (g < 0) g = 0;
@@ -85,9 +95,9 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 				if (r > 255) r = 255;
 				if (g > 255) g = 255;
 				if (b > 255) b = 255;
-			}
-			else
-			{
+				break;
+
+			default:
 				displayR = 0;
 				displayG = 0;
 				displayB = 0;
@@ -106,22 +116,49 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 
 			Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZLED_LOGO)][LOBYTE(ChromaSDK::Keyboard::RZLED_LOGO)] = 0x01000000 | RGB(displayR, displayG, displayB);;
 
-			charDisplayR = (int)((charBrightness / 100.0) * charR);
-			charDisplayG = (int)((charBrightness / 100.0) * charG);
-			charDisplayB = (int)((charBrightness / 100.0) * charB);
-
-			if (WASD)
+			switch(currentKBEffect)
 			{
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_W)][LOBYTE(ChromaSDK::Keyboard::RZKEY_W)] = 0x01000000 | RGB(charDisplayR, charDisplayG, charDisplayB);
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_A)][LOBYTE(ChromaSDK::Keyboard::RZKEY_A)] = 0x01000000 | RGB(charDisplayR, charDisplayG, charDisplayB);
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_S)][LOBYTE(ChromaSDK::Keyboard::RZKEY_S)] = 0x01000000 | RGB(charDisplayR, charDisplayG, charDisplayB);
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_D)][LOBYTE(ChromaSDK::Keyboard::RZKEY_D)] = 0x01000000 | RGB(charDisplayR, charDisplayG, charDisplayB);
-			}
+			case CChromaSDKImpl::Static:
+				staticDisplayR = (int)((charBrightness / 100.0) * staticR);
+				staticDisplayG = (int)((charBrightness / 100.0) * staticG);
+				staticDisplayB = (int)((charBrightness / 100.0) * staticB);
 
-			if (NUMS)
-			{
-				for (int i = 2; i < LOBYTE(ChromaSDK::Keyboard::RZKEY_6); i++)
-					Effect.Key[1][i] = 0x01000000 | RGB(charDisplayR, charDisplayG, charDisplayB);
+				if (WASD)
+				{
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_W)][LOBYTE(ChromaSDK::Keyboard::RZKEY_W)] = 0x01000000 | RGB(staticDisplayR, staticDisplayG, staticDisplayB);
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_A)][LOBYTE(ChromaSDK::Keyboard::RZKEY_A)] = 0x01000000 | RGB(staticDisplayR, staticDisplayG, staticDisplayB);
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_S)][LOBYTE(ChromaSDK::Keyboard::RZKEY_S)] = 0x01000000 | RGB(staticDisplayR, staticDisplayG, staticDisplayB);
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_D)][LOBYTE(ChromaSDK::Keyboard::RZKEY_D)] = 0x01000000 | RGB(staticDisplayR, staticDisplayG, staticDisplayB);
+				}
+
+				if (NUMS)
+				{
+					for (int i = 2; i < LOBYTE(ChromaSDK::Keyboard::RZKEY_6); i++)
+						Effect.Key[1][i] = 0x01000000 | RGB(staticDisplayR, staticDisplayG, staticDisplayB);
+				}
+				break;
+			case CChromaSDKImpl::On:
+				instance.getCurrentCharacterColor();
+				dynamicDisplayR = (int)((charBrightness / 100.0) * dynamicR);
+				dynamicDisplayG = (int)((charBrightness / 100.0) * dynamicG);
+				dynamicDisplayB = (int)((charBrightness / 100.0) * dynamicB);
+
+				
+
+				if (WASD)
+				{
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_W)][LOBYTE(ChromaSDK::Keyboard::RZKEY_W)] = 0x01000000 | RGB(dynamicDisplayR, dynamicDisplayG, dynamicDisplayB);
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_A)][LOBYTE(ChromaSDK::Keyboard::RZKEY_A)] = 0x01000000 | RGB(dynamicDisplayR, dynamicDisplayG, dynamicDisplayB);
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_S)][LOBYTE(ChromaSDK::Keyboard::RZKEY_S)] = 0x01000000 | RGB(dynamicDisplayR, dynamicDisplayG, dynamicDisplayB);
+					Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_D)][LOBYTE(ChromaSDK::Keyboard::RZKEY_D)] = 0x01000000 | RGB(dynamicDisplayR, dynamicDisplayG, dynamicDisplayB);
+				}
+
+				if (NUMS)
+				{
+					for (int i = 2; i < LOBYTE(ChromaSDK::Keyboard::RZKEY_6); i++)
+						Effect.Key[1][i] = 0x01000000 | RGB(dynamicDisplayR, dynamicDisplayG, dynamicDisplayB);
+				}
+				break;
 			}
 
 			if (numPadBars)
@@ -175,7 +212,7 @@ CChromaSDKImpl::~CChromaSDKImpl()
 {
 }
 
-BOOL CChromaSDKImpl::Initialize()
+BOOL CChromaSDKImpl::Initialize(CChromaSDKImpl _instance)
 {
     if(m_ChromaSDKModule == NULL)
     {
@@ -186,6 +223,8 @@ BOOL CChromaSDKImpl::Initialize()
             return FALSE;
         }
     }
+
+	instance = _instance;
 
     if(Init == NULL)
     {
@@ -267,17 +306,18 @@ void CChromaSDKImpl::MainAnimation()
 	CloseHandle(hWorkerThread);
 }
 
-void CChromaSDKImpl::ShowLevel(UINT Hp, UINT Ammo)
+void CChromaSDKImpl::setStaticCharacter(int r, int g, int b)
 {
-	health = Hp;
-	power = Ammo;
+	staticR = r;
+	staticG = g;
+	staticB = b;
 }
 
-void CChromaSDKImpl::setCharacter(int r, int g, int b)
+void CChromaSDKImpl::setDynamicCharacter(int r, int g, int b)
 {
-	charR = r;
-	charG = g;
-	charB = b;
+	dynamicR = r;
+	dynamicG = g;
+	dynamicB = b;
 }
 
 void CChromaSDKImpl::StopAnim()
@@ -293,6 +333,96 @@ void CChromaSDKImpl::StartAnim()
 void CChromaSDKImpl::SetBGEffect(CChromaSDKImpl::BGEffects newEffect)
 {
 	currentBGEffect = newEffect;
+}
+
+void CChromaSDKImpl::SetPath(std::string newPath)
+{
+	path = newPath;
+
+	getCurrentCharacterColor();
+}
+
+void CChromaSDKImpl::getCurrentCharacterColor()
+{
+	std::ifstream ifs;
+	std::string str1, str2;
+	ifs.open(path);
+
+	if (ifs)
+	{
+		while (ifs >> str1)
+		{
+			if (str1.compare("[\"Class\"]") == 0)
+			{
+				ifs >> str1 >> str2;
+				break;
+			}
+		}
+
+		if (str2.compare("\"Death Knight\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(DEATHKNIGHT);
+		}
+		else if (str2.compare("\"Demon Hunter\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(DEMONHUNTER);
+		}
+		else if (str2.compare("\"Druid\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(DRUID);
+		}
+		else if (str2.compare("\"Hunter\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(HUNTER);
+		}
+		else if (str2.compare("\"Mage\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(MAGE);
+		}
+		else if (str2.compare("\"Monk\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(MONK);
+		}
+		else if (str2.compare("\"Paladin\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(PALADIN);
+		}
+		else if (str2.compare("\"Priest\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(PRIEST);
+		}
+		else if (str2.compare("\"Rogue\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(ROGUE);
+		}
+		else if (str2.compare("\"Shaman\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(SHAMAN);
+		}
+		else if (str2.compare("\"Warlock\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(WARLOCK);
+		}
+		else if (str2.compare("\"Warrior\",") == 0)
+		{
+			CChromaSDKImpl::setDynamicCharacter(WARRIOR);
+		}
+		else
+		{
+			currentKBEffect = CChromaSDKImpl::Off;
+		}
+	}
+
+}
+
+void CChromaSDKImpl::SetKBEffect(KBEffects newEffect)
+{
+	currentKBEffect = newEffect;
+
+	if (newEffect == CChromaSDKImpl::On)
+	{
+		getCurrentCharacterColor();
+	}
 }
 
 void CChromaSDKImpl::SetMouseBG(bool On)

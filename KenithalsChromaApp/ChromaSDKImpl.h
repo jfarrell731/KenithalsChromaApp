@@ -7,6 +7,7 @@
 #include "ChromaSDK\inc\RzChromaSDKDefines.h"
 #include "ChromaSDK\inc\RzChromaSDKTypes.h"
 #include "ChromaSDK\inc\RzErrors.h"
+#include <string>
 
 const COLORREF BLACK = RGB(0,0,0);
 const COLORREF WHITE = RGB(255,255,255);
@@ -19,6 +20,20 @@ const COLORREF CYAN = RGB(00,255,255);
 const COLORREF ORANGE = RGB(255,165,00);
 const COLORREF PINK = RGB(255,192,203);
 const COLORREF GREY = RGB(125, 125, 125);
+
+#define DEATHKNIGHT		255, 0, 5
+#define	DEMONHUNTER		80, 0, 255
+#define DRUID			255, 60, 0
+#define HUNTER			10, 255, 10
+#define MAGE			50, 150, 255
+#define MONK			0, 255, 90
+#define PALADIN			255, 50, 90
+#define PRIEST			255, 255, 255
+#define ROGUE			255, 245, 20
+#define SHAMAN			0, 55, 255
+#define WARLOCK			200, 60, 255
+#define WARRIOR			255, 150, 40
+#define DEFAULT			0, 0, 0
 
 #define ALL_DEVICES         0
 #define KEYBOARD_DEVICES    1
@@ -35,7 +50,7 @@ public:
     CChromaSDKImpl();
     ~CChromaSDKImpl();
 
-    BOOL Initialize();
+    BOOL Initialize(CChromaSDKImpl instance);
     BOOL UnInitialize();
 
 	enum BGEffects {
@@ -43,11 +58,19 @@ public:
 		Spectrum
 	};
 
-    void ShowLevel(UINT Hp, UINT Ammo);
+	enum KBEffects {
+		Off = 0,
+		On,
+		Static
+	};
+
 	void UpdateBGBrightness(UINT Brightness);
 	void UpdateCharacterBrightness(UINT Brightness);
-	void setCharacter(int r, int g, int b);
+	void setStaticCharacter(int r, int g, int b);
+	void setDynamicCharacter(int r, int g, int b);
 	void SetBGEffect(BGEffects newEffect);
+	void SetKBEffect(KBEffects newEffect);
+	void SetPath(std::string newPath);
 	void SetMouseBG(bool On);
 	void SetNPBG(bool On);
 	void SetNPBars(bool On);
@@ -58,9 +81,11 @@ public:
 	void StopAnim();
     void ResetEffects(UINT DeviceType);
     BOOL IsDeviceConnected(RZDEVICEID DeviceId);
+	void getCurrentCharacterColor();
 
 private:
     HMODULE m_ChromaSDKModule;
+	
 };
 
 #endif

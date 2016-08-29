@@ -10,10 +10,9 @@
 class KenithalsChromaDlg : public CDialogEx
 {
 private:
-	CChromaSDKImpl m_ChromaSDKImpl;
-
 // Construction
 public:
+	CChromaSDKImpl m_ChromaSDKImpl;
 	KenithalsChromaDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data
@@ -36,4 +35,18 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+public:
+	CComboBox m_WOWDISPLAY, m_WOWSTATIC, m_BGDISPLAY;
+	CButton m_WOWWASD, m_WOWNUMS;
+	CSliderCtrl m_WOWBRIGHTNESS, m_BGBRIGHTNESS;
+	CEdit m_WOWPATH;
+
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+
+	afx_msg void OnCbnSelchangeWowdisplay();
+	afx_msg void OnBnClickedWowwasd();
+	afx_msg void OnBnClickedWownums();
+	afx_msg void OnCbnSelchangeWowstatic();
+	afx_msg void OnCbnSelchangeBgdisplay();
+	afx_msg void OnEnChangeWowpath();
 };

@@ -6,6 +6,9 @@
 #include "KenithalsChromaApp.h"
 #include "KenithalsChromaDlg.h"
 #include "afxdialogex.h"
+#include <string>
+#include <iostream>
+#include <fstream>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -58,12 +61,27 @@ KenithalsChromaDlg::KenithalsChromaDlg(CWnd* pParent /*=NULL*/)
 void KenithalsChromaDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_WOWDISPLAY, m_WOWDISPLAY);
+	DDX_Control(pDX, IDC_WOWSTATIC, m_WOWSTATIC);
+	DDX_Control(pDX, IDC_WOWWASD, m_WOWWASD);
+	DDX_Control(pDX, IDC_WOWNUMS, m_WOWNUMS);
+	DDX_Control(pDX, IDC_WOWBRIGHTNESS, m_WOWBRIGHTNESS);
+	DDX_Control(pDX, IDC_BGDISPLAY, m_BGDISPLAY);
+	DDX_Control(pDX, IDC_BGBRIGHTNESS, m_BGBRIGHTNESS);
+	DDX_Control(pDX, IDC_WOWPATH, m_WOWPATH);
 }
 
 BEGIN_MESSAGE_MAP(KenithalsChromaDlg, CDialogEx)
+	ON_WM_HSCROLL()
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_CBN_SELCHANGE(IDC_WOWDISPLAY, &KenithalsChromaDlg::OnCbnSelchangeWowdisplay)
+	ON_BN_CLICKED(IDC_WOWWASD, &KenithalsChromaDlg::OnBnClickedWowwasd)
+	ON_BN_CLICKED(IDC_WOWNUMS, &KenithalsChromaDlg::OnBnClickedWownums)
+	ON_CBN_SELCHANGE(IDC_WOWSTATIC, &KenithalsChromaDlg::OnCbnSelchangeWowstatic)
+	ON_CBN_SELCHANGE(IDC_BGDISPLAY, &KenithalsChromaDlg::OnCbnSelchangeBgdisplay)
+	ON_EN_CHANGE(IDC_WOWPATH, &KenithalsChromaDlg::OnEnChangeWowpath)
 END_MESSAGE_MAP()
 
 
@@ -100,8 +118,30 @@ BOOL KenithalsChromaDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-	m_ChromaSDKImpl.Initialize();
+	m_ChromaSDKImpl.Initialize(m_ChromaSDKImpl);
 	m_ChromaSDKImpl.ResetEffects(0);
+
+	m_WOWDISPLAY.SetCurSel(0);
+	m_WOWSTATIC.SetCurSel(0);
+	m_WOWWASD.SetCheck(1);
+	m_WOWNUMS.SetCheck(1);
+	m_WOWBRIGHTNESS.SetRange(20, 100);
+	m_WOWBRIGHTNESS.SetPos(100);
+
+	m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Off);
+	m_ChromaSDKImpl.setStaticCharacter(DEFAULT);
+	m_ChromaSDKImpl.setDynamicCharacter(DEFAULT);
+	m_ChromaSDKImpl.SetWoWWASD(m_WOWWASD.GetCheck() == 1);
+	m_ChromaSDKImpl.SetWoWNUMS(m_WOWNUMS.GetCheck() == 1);
+	m_ChromaSDKImpl.UpdateCharacterBrightness(m_WOWBRIGHTNESS.GetPos());
+
+	m_BGDISPLAY.SetCurSel(1);
+	m_BGBRIGHTNESS.SetRange(20, 100);
+	m_BGBRIGHTNESS.SetPos(50);
+
+	m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::Spectrum);
+	m_ChromaSDKImpl.UpdateBGBrightness(m_BGBRIGHTNESS.GetPos());
+
 	m_ChromaSDKImpl.StartAnim();
 	m_ChromaSDKImpl.MainAnimation();
 
@@ -160,4 +200,92 @@ HCURSOR KenithalsChromaDlg::OnQueryDragIcon()
 void KenithalsChromaDlg::OnDestroy()
 {
 	m_ChromaSDKImpl.UnInitialize();
+}
+
+void KenithalsChromaDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	m_ChromaSDKImpl.UpdateCharacterBrightness(m_WOWBRIGHTNESS.GetPos());
+	m_ChromaSDKImpl.UpdateBGBrightness(m_BGBRIGHTNESS.GetPos());
+}
+
+void KenithalsChromaDlg::OnCbnSelchangeWowdisplay()
+{
+	switch (m_WOWDISPLAY.GetCurSel())
+	{
+	case 1: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::On);
+		break;
+	case 2: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Static);
+		break;
+	default: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Off);
+	}
+}
+
+void KenithalsChromaDlg::OnCbnSelchangeWowstatic()
+{
+	switch (m_WOWSTATIC.GetCurSel())
+	{
+	case 1: m_ChromaSDKImpl.setStaticCharacter(DEATHKNIGHT);
+		break;
+	case 2: m_ChromaSDKImpl.setStaticCharacter(DEMONHUNTER);
+		break;
+	case 3: m_ChromaSDKImpl.setStaticCharacter(DRUID);
+		break;
+	case 4: m_ChromaSDKImpl.setStaticCharacter(HUNTER);
+		break;
+	case 5: m_ChromaSDKImpl.setStaticCharacter(MAGE);
+		break;
+	case 6: m_ChromaSDKImpl.setStaticCharacter(MONK);
+		break;
+	case 7: m_ChromaSDKImpl.setStaticCharacter(PALADIN);
+		break;
+	case 8: m_ChromaSDKImpl.setStaticCharacter(PRIEST);
+		break;
+	case 9: m_ChromaSDKImpl.setStaticCharacter(ROGUE);
+		break;
+	case 10: m_ChromaSDKImpl.setStaticCharacter(SHAMAN);
+		break;
+	case 11: m_ChromaSDKImpl.setStaticCharacter(WARLOCK);
+		break;
+	case 12: m_ChromaSDKImpl.setStaticCharacter(WARRIOR);
+		break;
+	default: m_ChromaSDKImpl.setStaticCharacter(DEFAULT);
+	}
+}
+
+void KenithalsChromaDlg::OnBnClickedWowwasd()
+{
+	m_ChromaSDKImpl.SetWoWWASD(m_WOWWASD.GetCheck() == 1);
+}
+
+void KenithalsChromaDlg::OnBnClickedWownums()
+{
+	m_ChromaSDKImpl.SetWoWNUMS(m_WOWNUMS.GetCheck() == 1);
+}
+
+void KenithalsChromaDlg::OnCbnSelchangeBgdisplay()
+{
+	switch (m_BGDISPLAY.GetCurSel())
+	{
+	case 1: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::Spectrum);
+		break;
+	default: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::None);
+	}
+}
+
+
+void KenithalsChromaDlg::OnEnChangeWowpath()
+{
+	std::ifstream ifs;
+	CString text;
+	m_WOWPATH.GetWindowText(text);
+
+	CT2CA convertString(text);
+	std::string textConvert(convertString);
+
+	ifs.open(textConvert);
+
+	if (ifs)
+	{
+		m_ChromaSDKImpl.SetPath(textConvert);
+	}
 }
