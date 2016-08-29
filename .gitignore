@@ -1,0 +1,7 @@
+KenithalsChromaApp/x64/*
+KenithalsChromaApp/debug/*
+KenithalsChromaApp/x86/*
+KenithalsChromaApp/ipch/*
+.vs/*
+KenithalsChromaApp/.vs/*
+*.VC.db

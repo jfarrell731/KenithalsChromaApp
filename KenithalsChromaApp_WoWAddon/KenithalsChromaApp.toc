@@ -1,0 +1,11 @@
+## Interface: 70000
+## Title: Kenithal's Chroma App Addon
+## Version: .0.2
+## Notes: Interface for the App to get Static Data
+## Author: Kenithal
+## DefaultState: enabled
+## SavedVariables: KenithalsChromaApp
+
+## Libs
+
+Core.lua

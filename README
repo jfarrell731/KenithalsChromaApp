@@ -1,0 +1,54 @@
+This project is a project to get Psuedo-Chroma Support for WoW.
+
+
+Issues:
+	WoW does not permit addons to write to files and such.
+	WoW severely limits the amount of dynamic information you can get access from outside the game.
+		- This is to prevent botting
+
+
+
+Current Support:
+	- Change static binding based on "current" class
+		* Can adjust brightness
+	- Change the background animation going
+		* Can adjust brightness
+		Animations:
+		- None
+		- Spectrum Cycling
+	- Mouse On/Off (follows bg)
+
+Future Support:
+	- Allow a lot more customization options
+		- What colors are associated with what classses
+		- Change which bindings get changed
+		- Secondary bindings and color management
+	
+	- Different background effects
+		- Color wheel
+		- Rainbow
+		- Static
+	
+	- Add reactive lighting and color choice
+	
+
+Desired Support:
+	- Interpret dynamic information to do cool affects
+		Ex: Leftside of numpad Health bar, right side Power bar
+
+
+
+Installation:
+
+For now you have to build the project yourself (I'm using VS2015)
+
+Then install the WoWAddon, by putting the folder "KenithalsChromaApp_WoWAddon" in your WoW/Interface/Addons/ folder.
+
+
+Use:
+Run the executable from building the release version of your choice.
+
+Copy and paste the path to your WoW/WTF/<USERNAME>/SavedVariables/ into the text box labeled WoWAddon Path.
+	- This is the file that the App will read to get the information it needs.
+
+Login to your character with the Addon enabled. Reloadui and everything should be working!

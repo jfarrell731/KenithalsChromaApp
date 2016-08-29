@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<application>
+    <title>Kenithal's WoW Chroma</title>
+    <description>Using KenithalsChromaApp -- Addon for WoW you can have Chroma Support for WoW!</description>
+    <author name="Kenithal" contact=""/>
+    <device_supported keyboard="1" mouse="1" headset="0" mousemat="0" keypad="0"/>
+	<category game="1">
+</application>
