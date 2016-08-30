@@ -50,26 +50,21 @@ public:
     CChromaSDKImpl();
     ~CChromaSDKImpl();
 
-    BOOL Initialize(CChromaSDKImpl instance);
+    BOOL Initialize();
     BOOL UnInitialize();
 
-	enum BGEffects {
-		None = 0,
-		Spectrum
-	};
-
-	enum KBEffects {
+	enum Effects {
 		Off = 0,
-		On,
-		Static
+		Spectrum,
+		Static,
+		Character
 	};
 
 	void UpdateBGBrightness(UINT Brightness);
 	void UpdateCharacterBrightness(UINT Brightness);
 	void setStaticCharacter(int r, int g, int b);
-	void setDynamicCharacter(int r, int g, int b);
-	void SetBGEffect(BGEffects newEffect);
-	void SetKBEffect(KBEffects newEffect);
+	void SetBGEffect(Effects newEffect);
+	void SetKBEffect(Effects newEffect);
 	void SetPath(std::string newPath);
 	void SetMouseBG(bool On);
 	void SetNPBG(bool On);
@@ -81,7 +76,6 @@ public:
 	void StopAnim();
     void ResetEffects(UINT DeviceType);
     BOOL IsDeviceConnected(RZDEVICEID DeviceId);
-	void getCurrentCharacterColor();
 
 private:
     HMODULE m_ChromaSDKModule;

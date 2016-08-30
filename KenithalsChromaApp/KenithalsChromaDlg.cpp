@@ -118,7 +118,7 @@ BOOL KenithalsChromaDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 
-	m_ChromaSDKImpl.Initialize(m_ChromaSDKImpl);
+	m_ChromaSDKImpl.Initialize();
 	m_ChromaSDKImpl.ResetEffects(0);
 
 	m_WOWDISPLAY.SetCurSel(0);
@@ -128,9 +128,13 @@ BOOL KenithalsChromaDlg::OnInitDialog()
 	m_WOWBRIGHTNESS.SetRange(20, 100);
 	m_WOWBRIGHTNESS.SetPos(100);
 
+	CString wowPath("C:\\Program Files\\World of Warcraft\\WTF\\Account\\!ACOUNTNAME!\\SavedVariables\\KenithalsChromaApp_WoWAddon.lua");
+
+	m_WOWPATH.SetWindowText(wowPath);
+
 	m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Off);
 	m_ChromaSDKImpl.setStaticCharacter(DEFAULT);
-	m_ChromaSDKImpl.setDynamicCharacter(DEFAULT);
+	m_ChromaSDKImpl.SetPath("C:\\Program Files\\World of Warcraft\\WTF\\Account\\!ACOUNTNAME!\\SavedVariables\\KenithalsChromaApp_WoWAddon.lua");
 	m_ChromaSDKImpl.SetWoWWASD(m_WOWWASD.GetCheck() == 1);
 	m_ChromaSDKImpl.SetWoWNUMS(m_WOWNUMS.GetCheck() == 1);
 	m_ChromaSDKImpl.UpdateCharacterBrightness(m_WOWBRIGHTNESS.GetPos());
@@ -212,9 +216,11 @@ void KenithalsChromaDlg::OnCbnSelchangeWowdisplay()
 {
 	switch (m_WOWDISPLAY.GetCurSel())
 	{
-	case 1: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::On);
+	case 1: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Spectrum);
 		break;
 	case 2: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Static);
+		break;
+	case 3: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Character);
 		break;
 	default: m_ChromaSDKImpl.SetKBEffect(CChromaSDKImpl::Off);
 	}
@@ -268,7 +274,11 @@ void KenithalsChromaDlg::OnCbnSelchangeBgdisplay()
 	{
 	case 1: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::Spectrum);
 		break;
-	default: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::None);
+	case 2: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::Static);
+		break;
+	case 3: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::Character);
+		break;
+	default: m_ChromaSDKImpl.SetBGEffect(CChromaSDKImpl::Off);
 	}
 }
 
