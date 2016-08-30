@@ -41,11 +41,11 @@ void Character::iterate()
 			}
 		}
 
-		if (str.compare("\"Death Knight\",") == 0)
+		if (str.compare("\"Death") == 0)
 		{
 			setColor(DEATHKNIGHT);
 		}
-		else if (str.compare("\"Demon Hunter\",") == 0)
+		else if (str.compare("\"Demon") == 0)
 		{
 			setColor(DEMONHUNTER);
 		}
