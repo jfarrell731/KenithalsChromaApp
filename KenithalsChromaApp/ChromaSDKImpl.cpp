@@ -5,6 +5,8 @@
 #include "SpectrumCycle.h"
 #include <string>
 #include "Character.h"
+#include "KeyboardData.h"
+#include "MouseData.h"
 
 #ifdef _WIN64
 #define CHROMASDKDLL        _T("RzChromaSDK64.dll")
@@ -47,19 +49,14 @@ QUERYDEVICE QueryDevice = NULL;
 
 bool Anim = false, numPadBG = true, numPadBars = false, mouseOn = true, WASD = false, NUMS = false;
 UINT health = 0, power = 0, bgBrightness = 25, staticR = 0, staticG = 0, staticB = 0, charBrightness = 0, dynamicR = 0, dynamicG = 0, dynamicB = 0;
-CChromaSDKImpl::Effects currentBGEffect = CChromaSDKImpl::Spectrum;
-CChromaSDKImpl::Effects currentKBEffect = CChromaSDKImpl::Off;
-std::string path;
 
 SpectrumCycle spectrumInstance;
 Character characterInstance;
-
-CChromaSDKImpl instance;
+KeyboardData keyboardInstance;
+MouseData mouseInstance;
 
 DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 {
-	int bgDisplayR, bgDisplayG, bgDisplayB, kbDisplayR, kbDisplayG, kbDisplayB, mDisplayR, mDisplayG, mDisplayB;
-
 	while (Anim)
 	{
 		if (CreateKeyboardEffect)
@@ -70,98 +67,27 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 			spectrumInstance.iterate();
 			characterInstance.iterate();
 
-			switch(currentBGEffect)
-			{
-			case CChromaSDKImpl::Spectrum:
-				bgDisplayR = (int)((bgBrightness / 100.0) * spectrumInstance.getR());
-				bgDisplayG = (int)((bgBrightness / 100.0) * spectrumInstance.getG());
-				bgDisplayB = (int)((bgBrightness / 100.0) * spectrumInstance.getB());
-				break;
-			case CChromaSDKImpl::Static:
-				bgDisplayR = (int)((bgBrightness / 100.0) * staticR);
-				bgDisplayG = (int)((bgBrightness / 100.0) * staticG);
-				bgDisplayB = (int)((bgBrightness / 100.0) * staticB);
-				break;
-			case CChromaSDKImpl::Character:
-				bgDisplayR = (int)((bgBrightness / 100.0) * characterInstance.getR());
-				bgDisplayG = (int)((bgBrightness / 100.0) * characterInstance.getG());
-				bgDisplayB = (int)((bgBrightness / 100.0) * characterInstance.getB());
-				break;
-			default:
-				bgDisplayR = 0;
-				bgDisplayG = 0;
-				bgDisplayB = 0;
-			}
-
 			for (int i = 0; i < ChromaSDK::Keyboard::MAX_ROW; i++)
-				for (int j = 0; j < LOBYTE(ChromaSDK::Keyboard::RZKEY_NUMLOCK); j++)
-					Effect.Key[i][j] = 0x01000000 | RGB(bgDisplayR, bgDisplayG, bgDisplayB);
-
-			if (numPadBG)
 			{
-				for (int i = 0; i < ChromaSDK::Keyboard::MAX_ROW; i++)
-					for (int j = LOBYTE(ChromaSDK::Keyboard::RZKEY_NUMLOCK); j < LOBYTE(ChromaSDK::Keyboard::MAX_COLUMN); j++)
-						Effect.Key[i][j] = 0x01000000 | RGB(bgDisplayR, bgDisplayG, bgDisplayB);
+				for (int j = 0; j < ChromaSDK::Keyboard::MAX_COLUMN; j++)
+				{
+					switch (keyboardInstance(i, j).getCurrentEffect())
+					{
+					case CChromaSDKImpl::Spectrum:
+						keyboardInstance(i, j).setColor(spectrumInstance.getR(), spectrumInstance.getG(), spectrumInstance.getB());
+						break;
+					case CChromaSDKImpl::Character:
+						keyboardInstance(i, j).setColor(characterInstance.getR(), characterInstance.getG(), characterInstance.getB());
+						break;
+					case CChromaSDKImpl::Off:
+						keyboardInstance(i, j).setColor(0, 0, 0);
+						break;
+					}
+
+					Effect.Key[i][j] = 0x01000000 | keyboardInstance(i, j).getColor();
+				}
 			}
 
-			Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZLED_LOGO)][LOBYTE(ChromaSDK::Keyboard::RZLED_LOGO)] = 0x01000000 | RGB(bgDisplayR, bgDisplayG, bgDisplayB);
-
-			switch(currentKBEffect)
-			{
-			case CChromaSDKImpl::Spectrum:
-				kbDisplayR = (int)((charBrightness / 100.0) * spectrumInstance.getR());
-				kbDisplayG = (int)((charBrightness / 100.0) * spectrumInstance.getG());
-				kbDisplayB = (int)((charBrightness / 100.0) * spectrumInstance.getB());
-				break;
-			case CChromaSDKImpl::Static:
-				kbDisplayR = (int)((charBrightness / 100.0) * staticR);
-				kbDisplayG = (int)((charBrightness / 100.0) * staticG);
-				kbDisplayB = (int)((charBrightness / 100.0) * staticB);
-				break;
-			case CChromaSDKImpl::Character:
-				kbDisplayR = (int)((charBrightness / 100.0) * characterInstance.getR());
-				kbDisplayG = (int)((charBrightness / 100.0) * characterInstance.getG());
-				kbDisplayB = (int)((charBrightness / 100.0) * characterInstance.getB());
-				break;
-			default:
-				kbDisplayR = 0;
-				kbDisplayG = 0;
-				kbDisplayB = 0;
-			}
-
-			if (WASD)
-			{
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_W)][LOBYTE(ChromaSDK::Keyboard::RZKEY_W)] = 0x01000000 | RGB(kbDisplayR, kbDisplayG, kbDisplayB);
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_A)][LOBYTE(ChromaSDK::Keyboard::RZKEY_A)] = 0x01000000 | RGB(kbDisplayR, kbDisplayG, kbDisplayB);
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_S)][LOBYTE(ChromaSDK::Keyboard::RZKEY_S)] = 0x01000000 | RGB(kbDisplayR, kbDisplayG, kbDisplayB);
-				Effect.Key[HIBYTE(ChromaSDK::Keyboard::RZKEY_D)][LOBYTE(ChromaSDK::Keyboard::RZKEY_D)] = 0x01000000 | RGB(kbDisplayR, kbDisplayG, kbDisplayB);
-			}
-
-			if (NUMS)
-			{
-				for (int i = 2; i < LOBYTE(ChromaSDK::Keyboard::RZKEY_6); i++)
-					Effect.Key[1][i] = 0x01000000 | RGB(kbDisplayR, kbDisplayG, kbDisplayB);
-			}
-
-			if (numPadBars)
-			{
-				// Function keys as health
-				UINT RemainingHealth = UINT(health / 100.0 * 50.0); // Number of rows to fill based on hp
-
-				COLORREF HpColor = RGB((((50 - RemainingHealth) / 50.0) * 255), ((RemainingHealth / 50.0) * 255), 0);
-
-				for (UINT i = 0; i <= RemainingHealth / 11; i++)
-					for (UINT j = LOBYTE(RZKEY_NUMLOCK); j <= LOBYTE(RZKEY_NUMPAD_DIVIDE); j++)
-						Effect.Key[(ChromaSDK::Keyboard::MAX_ROW - 1) - i][j] = 0x01000000 | HpColor;
-
-				UINT RemainingAmmo = UINT(power / 100.0 * 50.0); // Number of rows to fill based on mana
-
-				COLORREF ManaColor = RGB(0, (((50 - RemainingAmmo) / 50.0) * 120), (((20 + RemainingAmmo) / 70.0) * 255));
-
-				for (UINT i = 0; i <= RemainingAmmo / 11; i++)
-					for (UINT j = LOBYTE(RZKEY_NUMPAD_MULTIPLY); j <= LOBYTE(RZKEY_NUMPAD_SUBTRACT); j++)
-						Effect.Key[(ChromaSDK::Keyboard::MAX_ROW - 1) - i][j] = 0x01000000 | ManaColor;
-			}
 			Result = CreateKeyboardEffect(ChromaSDK::Keyboard::CHROMA_CUSTOM_KEY, &Effect, NULL);
 
 			ASSERT(Result == RZRESULT_SUCCESS);
@@ -169,22 +95,27 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 
 		if (CreateMouseEffect)
 		{
-			if (mouseOn)
+			ChromaSDK::Mouse::CUSTOM_EFFECT_TYPE2 Effect = {};
+			for (int i = 0; i < ChromaSDK::Mouse::MAX_ROW; i++)
 			{
-				mDisplayR = bgDisplayR;
-				mDisplayG = bgDisplayG;
-				mDisplayB = bgDisplayB;
-			}
-			else
-			{
-				mDisplayR = 0;
-				mDisplayG = 0;
-				mDisplayB = 0;
-			}
+				for (int j = 0; j < ChromaSDK::Mouse::MAX_COLUMN; j++)
+				{
+					switch (mouseInstance(i, j).getCurrentEffect())
+					{
+					case CChromaSDKImpl::Spectrum:
+						mouseInstance(i, j).setColor(spectrumInstance.getR(), spectrumInstance.getG(), spectrumInstance.getB());
+						break;
+					case CChromaSDKImpl::Character:
+						mouseInstance(i, j).setColor(characterInstance.getR(), characterInstance.getG(), characterInstance.getB());
+						break;
+					case CChromaSDKImpl::Off:
+						mouseInstance(i, j).setColor(0, 0, 0);
+						break;
+					}
 
-			ChromaSDK::Mouse::CUSTOM_EFFECT_TYPE Effect = {};
-			for(int i = 1; i <= Mouse::RZLED_SIDE_STRIP14; i++)
-				Effect.Color[i] = RGB(mDisplayR, mDisplayG, mDisplayB);
+					Effect.Color[i][j] = mouseInstance(i, j).getColor();
+				}
+			}
 
 			CreateMouseEffect(ChromaSDK::Mouse::CHROMA_CUSTOM, &Effect, NULL);
 		}
@@ -278,14 +209,26 @@ BOOL CChromaSDKImpl::UnInitialize()
     return FALSE;
 }
 
-void CChromaSDKImpl::UpdateBGBrightness(UINT Brightness)
+void CChromaSDKImpl::setAll(Effects newEffect, int brightness)
 {
-	bgBrightness = Brightness;
+	keyboardInstance.setAll(newEffect, brightness);
+	mouseInstance.setAll(newEffect, brightness);
 }
 
-void CChromaSDKImpl::UpdateCharacterBrightness(UINT Brightness)
+void CChromaSDKImpl::setAll(Effects newEffect, int r, int g, int b, int brightness)
 {
-	charBrightness = Brightness;
+	keyboardInstance.setAll(newEffect, r, g, b, brightness);
+	mouseInstance.setAll(newEffect, r, g, b, brightness);
+}
+
+void CChromaSDKImpl::setKey(int row, int col, CChromaSDKImpl::Effects newEffect, int brightness)
+{
+	keyboardInstance(row, col).setEffect(newEffect, brightness);
+}
+
+void CChromaSDKImpl::setKey(int row, int col, CChromaSDKImpl::Effects newEffect, int r, int g, int b, int brightness)
+{
+	keyboardInstance(row, col).setEffect(newEffect, r, g, b, brightness);
 }
 
 void CChromaSDKImpl::MainAnimation()
@@ -293,13 +236,6 @@ void CChromaSDKImpl::MainAnimation()
 	HANDLE hWorkerThread = NULL;
 	hWorkerThread = CreateThread(NULL, 0, Thread_MainAnimation, this, 0, NULL);
 	CloseHandle(hWorkerThread);
-}
-
-void CChromaSDKImpl::setStaticCharacter(int r, int g, int b)
-{
-	staticR = r;
-	staticG = g;
-	staticB = b;
 }
 
 void CChromaSDKImpl::StopAnim()
@@ -312,44 +248,9 @@ void CChromaSDKImpl::StartAnim()
 	Anim = true;
 }
 
-void CChromaSDKImpl::SetBGEffect(CChromaSDKImpl::Effects newEffect)
-{
-	currentBGEffect = newEffect;
-}
-
 void CChromaSDKImpl::SetPath(std::string newPath)
 {
 	characterInstance.setPath(newPath);
-}
-
-void CChromaSDKImpl::SetKBEffect(Effects newEffect)
-{
-	currentKBEffect = newEffect;
-}
-
-void CChromaSDKImpl::SetMouseBG(bool On)
-{
-	mouseOn = On;
-}
-
-void CChromaSDKImpl::SetNPBG(bool On)
-{
-	numPadBG = On;
-}
-
-void CChromaSDKImpl::SetNPBars(bool On)
-{
-	numPadBars = On;
-}
-
-void CChromaSDKImpl::SetWoWWASD(bool On)
-{
-	WASD = On;
-}
-
-void CChromaSDKImpl::SetWoWNUMS(bool On)
-{
-	NUMS = On;
 }
 
 void CChromaSDKImpl::ResetEffects(UINT DeviceType)

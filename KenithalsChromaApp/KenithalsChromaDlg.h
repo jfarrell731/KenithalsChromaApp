@@ -10,7 +10,7 @@
 class KenithalsChromaDlg : public CDialogEx
 {
 private:
-// Construction
+	// Construction
 public:
 	CChromaSDKImpl m_ChromaSDKImpl;
 	KenithalsChromaDlg(CWnd* pParent = NULL);	// standard constructor
@@ -20,7 +20,7 @@ public:
 	enum { IDD = IDD_KenithalsChromaApp_DIALOG };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
 
@@ -36,17 +36,15 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CComboBox m_WOWDISPLAY, m_WOWSTATIC, m_BGDISPLAY;
-	CButton m_WOWWASD, m_WOWNUMS;
-	CSliderCtrl m_WOWBRIGHTNESS, m_BGBRIGHTNESS;
 	CEdit m_WOWPATH;
+	CButton m_Keyboard_Buttons[ChromaSDK::Keyboard::MAX_ROW][ChromaSDK::Keyboard::MAX_COLUMN];
+	CButton m_Select, m_Deselect, m_Apply;
+	CComboBox m_DisplayType;
+	CMFCColorButton m_ColorPicker;
+	CSliderCtrl m_Brightness;
 
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
-
-	afx_msg void OnCbnSelchangeWowdisplay();
-	afx_msg void OnBnClickedWowwasd();
-	afx_msg void OnBnClickedWownums();
-	afx_msg void OnCbnSelchangeWowstatic();
-	afx_msg void OnCbnSelchangeBgdisplay();
 	afx_msg void OnEnChangeWowpath();
+	afx_msg void OnBnClickedSelect();
+	afx_msg void OnBnClickedDeselect();
+	afx_msg void OnBnClickedApply();
 };

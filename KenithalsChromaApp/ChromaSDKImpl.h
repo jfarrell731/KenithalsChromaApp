@@ -60,17 +60,11 @@ public:
 		Character
 	};
 
-	void UpdateBGBrightness(UINT Brightness);
-	void UpdateCharacterBrightness(UINT Brightness);
-	void setStaticCharacter(int r, int g, int b);
-	void SetBGEffect(Effects newEffect);
-	void SetKBEffect(Effects newEffect);
+	void setAll(Effects newEffect, int brightness);
+	void setAll(Effects newEffect, int r, int g, int b, int brightness);
+	void setKey(int row, int col, Effects newEffect, int brightness);
+	void setKey(int row, int col, Effects newEffect, int r, int g, int b, int brightness);
 	void SetPath(std::string newPath);
-	void SetMouseBG(bool On);
-	void SetNPBG(bool On);
-	void SetNPBars(bool On);
-	void SetWoWWASD(bool On);
-	void SetWoWNUMS(bool On);
 	void MainAnimation();
 	void StartAnim();
 	void StopAnim();

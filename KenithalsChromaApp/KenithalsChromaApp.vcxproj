@@ -189,6 +189,9 @@
     <ClInclude Include="ColorEffect.h" />
     <ClInclude Include="KenithalsChromaDlg.h" />
     <ClInclude Include="KenithalsChromaApp.h" />
+    <ClInclude Include="Key.h" />
+    <ClInclude Include="KeyboardData.h" />
+    <ClInclude Include="MouseData.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SpectrumCycle.h" />
     <ClInclude Include="stdafx.h" />
@@ -200,6 +203,9 @@
     <ClCompile Include="ColorEffect.cpp" />
     <ClCompile Include="KenithalsChromaDlg.cpp" />
     <ClCompile Include="KenithalsChromaApp.cpp" />
+    <ClCompile Include="Key.cpp" />
+    <ClCompile Include="KeyboardData.cpp" />
+    <ClCompile Include="MouseData.cpp" />
     <ClCompile Include="SpectrumCycle.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -215,6 +221,7 @@
     <None Include="res\KenithalsChromaApp.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\ESC_Key.png" />
     <Image Include="res\KenithalsChromaApp.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
