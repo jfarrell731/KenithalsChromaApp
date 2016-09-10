@@ -54,7 +54,17 @@ void Key::setColor(int _r, int _g, int _b, int _brightness)
 
 void Key::setBrightness(int _brightness)
 {
+	if (_brightness > 100)
+		_brightness = 100;
+	if (_brightness < 20)
+		_brightness = 20;
+
 	brightness = _brightness;
+}
+
+int Key::getBrightness()
+{
+	return brightness;
 }
 
 CChromaSDKImpl::Effects Key::getCurrentEffect()

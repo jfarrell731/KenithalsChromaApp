@@ -14,6 +14,9 @@
 #define CHROMASDKDLL        _T("RzChromaSDK.dll")
 #endif
 
+// For convenience on output
+#define NL std::endl
+
 using namespace ChromaSDK;
 using namespace ChromaSDK::Keyboard;
 using namespace ChromaSDK::Keypad;
@@ -148,6 +151,12 @@ BOOL CChromaSDKImpl::Initialize()
 
     if(Init == NULL)
     {
+		std::string appData = getenv("APPDATA"), folder = appData + "\\KenithalsChromaApp";
+
+		CString Sfolder(folder.c_str());
+
+		CreateDirectory(Sfolder, NULL);
+
         RZRESULT Result = RZRESULT_INVALID;
         Init = (INIT)GetProcAddress(m_ChromaSDKModule, "Init");
         if(Init)
@@ -236,6 +245,127 @@ void CChromaSDKImpl::MainAnimation()
 	HANDLE hWorkerThread = NULL;
 	hWorkerThread = CreateThread(NULL, 0, Thread_MainAnimation, this, 0, NULL);
 	CloseHandle(hWorkerThread);
+}
+
+void CChromaSDKImpl::save(int profileNum)
+{
+	std::string appData = getenv("APPDATA"), profile = appData + "\\KenithalsChromaApp\\profile" + std::to_string(profileNum);
+	
+	std::ofstream pos(profile, std::ofstream::out);
+
+	pos << "WoWIntegration: ' " << characterInstance.getPath() << " '" << NL;
+
+	pos << NL << "Keyboard" << NL << "{" << NL;
+
+	for (int i = 0; i < ChromaSDK::Keyboard::MAX_ROW; i++)
+	{
+		for (int j = 0; j < ChromaSDK::Keyboard::MAX_COLUMN; j++)
+		{
+			pos << "\tKey " << i << " " << j << NL << "\t{" << NL;
+			pos << "\t\trgb: " << std::to_string(GetRValue(keyboardInstance(i, j).getColor())) << " " << std::to_string(GetGValue(keyboardInstance(i, j).getColor())) << " " << std::to_string(GetBValue(keyboardInstance(i, j).getColor())) << NL;
+			pos << "\t\tbrightness: " << std::to_string(keyboardInstance(i, j).getBrightness()) << NL;
+			pos << "\t\teffect: " << std::to_string(keyboardInstance(i, j).getCurrentEffect()) << NL;
+			pos << "\t}" << NL;
+		}
+	}
+
+	pos << "}" << NL;
+
+	pos << NL << "Mouse" << NL << "{" << NL;
+
+	for (int i = 0; i < ChromaSDK::Mouse::MAX_ROW; i++)
+	{
+		for (int j = 0; j < ChromaSDK::Mouse::MAX_COLUMN; j++)
+		{
+			pos << "\tKey " << i << " " << j << NL << "\t{" << NL;
+			pos << "\t\trgb: " << std::to_string(GetRValue(mouseInstance(i, j).getColor())) << " " << std::to_string(GetGValue(mouseInstance(i, j).getColor())) << " " << std::to_string(GetBValue(mouseInstance(i, j).getColor())) << NL;
+			pos << "\t\tbrightness: " << std::to_string(mouseInstance(i, j).getBrightness()) << NL;
+			pos << "\t\teffect: " << std::to_string(mouseInstance(i, j).getCurrentEffect()) << NL;
+			pos << "\t}" << NL;
+		}
+	}
+
+	pos << "}" << NL;
+
+	pos.close();
+}
+
+std::string CChromaSDKImpl::load(int profileNum)
+{
+	std::string appData = getenv("APPDATA"), profile = appData + "\\KenithalsChromaApp\\profile" + std::to_string(profileNum), filler, path;
+	int row, col, r, g, b, brightness, effect;
+
+	std::ifstream pis(profile, std::ios::beg);
+	path = "";
+
+	if (pis.is_open())
+	{
+		while (!pis.eof())
+		{
+			pis >> filler;
+			if (filler == "WoWIntegration:")
+			{
+				pis >> filler >> filler;
+				path = "";
+				do
+				{
+					if (path == "")
+						path += filler;
+					else
+						path += " " + filler;
+					pis >> filler;
+				} while (filler != "'");
+
+				characterInstance.setPath(path);
+			}
+
+			if (filler == "Keyboard")
+			{
+				pis >> filler >> filler;
+				do
+				{
+					if (filler == "Key")
+					{
+						pis >> row >> col;
+						pis >> filler;
+						pis >> filler >> r >> g >> b;
+						pis >> filler >> brightness;
+						pis >> filler >> effect;
+
+						keyboardInstance(row, col).setEffect(CChromaSDKImpl::Effects(effect), r, g, b, brightness);
+
+						pis >> filler >> filler;
+					}
+
+				} while (filler != "}");
+			}
+
+			if (filler == "Mouse")
+			{
+				pis >> filler >> filler;
+				do
+				{
+					if (filler == "Key")
+					{
+						pis >> row >> col;
+						pis >> filler;
+						pis >> filler >> r >> g >> b;
+						pis >> filler >> brightness;
+						pis >> filler >> effect;
+
+						mouseInstance(row, col).setEffect(CChromaSDKImpl::Effects(effect), r, g, b, brightness);
+
+						pis >> filler >> filler;
+					}
+
+				} while (filler != "}");
+			}
+		}
+	}
+
+	pis.close();
+
+	return path;
 }
 
 void CChromaSDKImpl::StopAnim()

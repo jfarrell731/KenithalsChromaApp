@@ -38,8 +38,8 @@ protected:
 public:
 	CEdit m_WOWPATH;
 	CButton m_Keyboard_Buttons[ChromaSDK::Keyboard::MAX_ROW][ChromaSDK::Keyboard::MAX_COLUMN];
-	CButton m_Select, m_Deselect, m_Apply;
-	CComboBox m_DisplayType;
+	CButton m_Select, m_Deselect, m_Apply, m_Save, m_Load;
+	CComboBox m_DisplayType, m_Profile;
 	CMFCColorButton m_ColorPicker;
 	CSliderCtrl m_Brightness;
 
@@ -47,4 +47,6 @@ public:
 	afx_msg void OnBnClickedSelect();
 	afx_msg void OnBnClickedDeselect();
 	afx_msg void OnBnClickedApply();
+	afx_msg void OnBnClickedSave();
+	afx_msg void OnBnClickedLoad();
 };

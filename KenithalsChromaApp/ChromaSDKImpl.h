@@ -69,6 +69,8 @@ public:
 	void StartAnim();
 	void StopAnim();
     void ResetEffects(UINT DeviceType);
+	void save(int profileNum);
+	std::string load(int profileNum);
     BOOL IsDeviceConnected(RZDEVICEID DeviceId);
 
 private:

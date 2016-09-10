@@ -17,6 +17,7 @@ public:
 	void setColor(int _r, int _g, int _b);
 	void setColor(int _r, int _g, int _b, int _brightness);
 	void setBrightness(int _brightness);
+	int getBrightness();
 
 	CChromaSDKImpl::Effects getCurrentEffect();
 	COLORREF getColor();

@@ -185,6 +185,9 @@ void KenithalsChromaDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_DISPLAYTYPE, m_DisplayType);
 	DDX_Control(pDX, IDC_STATICCOLOR, m_ColorPicker);
 	DDX_Control(pDX, IDC_BRIGHTNESS, m_Brightness);
+	DDX_Control(pDX, IDC_PROFILE, m_Profile);
+	DDX_Control(pDX, IDC_SAVE, m_Save);
+	DDX_Control(pDX, IDC_LOAD, m_Load);
 }
 
 BEGIN_MESSAGE_MAP(KenithalsChromaDlg, CDialogEx)
@@ -195,6 +198,8 @@ BEGIN_MESSAGE_MAP(KenithalsChromaDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_SELECT, &KenithalsChromaDlg::OnBnClickedSelect)
 	ON_BN_CLICKED(IDC_DESELECT, &KenithalsChromaDlg::OnBnClickedDeselect)
 	ON_BN_CLICKED(IDC_APPLY, &KenithalsChromaDlg::OnBnClickedApply)
+	ON_BN_CLICKED(IDC_SAVE, &KenithalsChromaDlg::OnBnClickedSave)
+	ON_BN_CLICKED(IDC_LOAD, &KenithalsChromaDlg::OnBnClickedLoad)
 END_MESSAGE_MAP()
 
 
@@ -238,6 +243,7 @@ BOOL KenithalsChromaDlg::OnInitDialog()
 	m_Brightness.SetRange(20, 100);
 	m_Brightness.SetPos(50);
 
+	m_Profile.SetCurSel(0);
 
 	CString wowPath("C:\\Program Files\\World of Warcraft\\WTF\\Account\\!ACOUNTNAME!\\SavedVariables\\KenithalsChromaApp_WoWAddon.lua");
 
@@ -324,7 +330,6 @@ void KenithalsChromaDlg::OnEnChangeWowpath()
 	}
 }
 
-
 void KenithalsChromaDlg::OnBnClickedSelect()
 {
 	for (int i = 0; i < ChromaSDK::Keyboard::MAX_ROW; i++)
@@ -333,9 +338,6 @@ void KenithalsChromaDlg::OnBnClickedSelect()
 				m_Keyboard_Buttons[i][j].SetCheck(1);
 }
 
-
-
-
 void KenithalsChromaDlg::OnBnClickedDeselect()
 {
 	for (int i = 0; i < ChromaSDK::Keyboard::MAX_ROW; i++)
@@ -343,7 +345,6 @@ void KenithalsChromaDlg::OnBnClickedDeselect()
 			if(m_Keyboard_Buttons[i][j])
 				m_Keyboard_Buttons[i][j].SetCheck(0);
 }
-
 
 void KenithalsChromaDlg::OnBnClickedApply()
 {
@@ -367,9 +368,23 @@ void KenithalsChromaDlg::OnBnClickedApply()
 				default:
 					m_ChromaSDKImpl.setKey(i, j, CChromaSDKImpl::Effects::Off, 0);
 				}
-
-				m_Keyboard_Buttons[i][j].SetCheck(0);
 			}
 		}
 	}
+}
+
+void KenithalsChromaDlg::OnBnClickedSave()
+{
+	m_ChromaSDKImpl.save(m_Profile.GetCurSel() + 1);
+}
+
+void KenithalsChromaDlg::OnBnClickedLoad()
+{
+	std::string newPath;
+
+	newPath = m_ChromaSDKImpl.load(m_Profile.GetCurSel() + 1);
+
+	CString pathText(newPath.c_str());
+
+	m_WOWPATH.SetWindowText(pathText);
 }

@@ -15,6 +15,7 @@ public:
 	~Character();
 
 	void setPath(std::string newPath);
+	std::string getPath();
 	void iterate();
 };
 

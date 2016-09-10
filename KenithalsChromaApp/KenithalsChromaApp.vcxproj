@@ -221,7 +221,6 @@
     <None Include="res\KenithalsChromaApp.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\ESC_Key.png" />
     <Image Include="res\KenithalsChromaApp.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

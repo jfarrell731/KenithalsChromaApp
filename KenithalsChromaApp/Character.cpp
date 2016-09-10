@@ -17,6 +17,11 @@ void Character::setPath(std::string newPath)
 	path = newPath;
 }
 
+std::string Character::getPath()
+{
+	return path;
+}
+
 void Character::setColor(int _r, int _g, int _b)
 {
 	r = _r;
