@@ -120,7 +120,7 @@ DWORD WINAPI Thread_MainAnimation(LPVOID lpParameter)
 				}
 			}
 
-			CreateMouseEffect(ChromaSDK::Mouse::CHROMA_CUSTOM, &Effect, NULL);
+			CreateMouseEffect(ChromaSDK::Mouse::CHROMA_CUSTOM2, &Effect, NULL);
 		}
 
 		Sleep(50);
@@ -230,14 +230,24 @@ void CChromaSDKImpl::setAll(Effects newEffect, int r, int g, int b, int brightne
 	mouseInstance.setAll(newEffect, r, g, b, brightness);
 }
 
-void CChromaSDKImpl::setKey(int row, int col, CChromaSDKImpl::Effects newEffect, int brightness)
+void CChromaSDKImpl::setKeyboardKey(int row, int col, CChromaSDKImpl::Effects newEffect, int brightness)
 {
 	keyboardInstance(row, col).setEffect(newEffect, brightness);
 }
 
-void CChromaSDKImpl::setKey(int row, int col, CChromaSDKImpl::Effects newEffect, int r, int g, int b, int brightness)
+void CChromaSDKImpl::setKeyboardKey(int row, int col, CChromaSDKImpl::Effects newEffect, int r, int g, int b, int brightness)
 {
 	keyboardInstance(row, col).setEffect(newEffect, r, g, b, brightness);
+}
+
+void CChromaSDKImpl::setMouseKey(int row, int col, CChromaSDKImpl::Effects newEffect, int brightness)
+{
+	mouseInstance(row, col).setEffect(newEffect, brightness);
+}
+
+void CChromaSDKImpl::setMouseKey(int row, int col, CChromaSDKImpl::Effects newEffect, int r, int g, int b, int brightness)
+{
+	mouseInstance(row, col).setEffect(newEffect, r, g, b, brightness);
 }
 
 void CChromaSDKImpl::MainAnimation()

@@ -179,6 +179,32 @@ void KenithalsChromaDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_KEY_RAZER_LOGO, m_Keyboard_Buttons[HIBYTE(ChromaSDK::Keyboard::RZLED_LOGO)][LOBYTE(ChromaSDK::Keyboard::RZLED_LOGO)]);
 
+	DDX_Control(pDX, IDC_MS_LEFT1, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE1)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE1)]);
+	DDX_Control(pDX, IDC_MS_LEFT2, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE2)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE2)]);
+	DDX_Control(pDX, IDC_MS_LEFT3, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE3)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE3)]);
+	DDX_Control(pDX, IDC_MS_LEFT4, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE4)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE4)]);
+	DDX_Control(pDX, IDC_MS_LEFT5, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE5)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE5)]);
+	DDX_Control(pDX, IDC_MS_LEFT6, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE6)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE6)]);
+	DDX_Control(pDX, IDC_MS_LEFT7, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE7)][LOBYTE(ChromaSDK::Mouse::RZLED2_LEFT_SIDE7)]);
+
+	DDX_Control(pDX, IDC_MS_BOT1, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM1)][LOBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM1)]);
+	DDX_Control(pDX, IDC_MS_BOT2, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM2)][LOBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM2)]);
+	DDX_Control(pDX, IDC_MS_BOT3, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM3)][LOBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM3)]);
+	DDX_Control(pDX, IDC_MS_BOT4, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM4)][LOBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM4)]);
+	DDX_Control(pDX, IDC_MS_BOT5, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM5)][LOBYTE(ChromaSDK::Mouse::RZLED2_BOTTOM5)]);
+
+	DDX_Control(pDX, IDC_MS_RIGHT1, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE1)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE1)]);
+	DDX_Control(pDX, IDC_MS_RIGHT2, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE2)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE2)]);
+	DDX_Control(pDX, IDC_MS_RIGHT3, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE3)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE3)]);
+	DDX_Control(pDX, IDC_MS_RIGHT4, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE4)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE4)]);
+	DDX_Control(pDX, IDC_MS_RIGHT5, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE5)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE5)]);
+	DDX_Control(pDX, IDC_MS_RIGHT6, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE6)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE6)]);
+	DDX_Control(pDX, IDC_MS_RIGHT7, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE7)][LOBYTE(ChromaSDK::Mouse::RZLED2_RIGHT_SIDE7)]);
+
+	DDX_Control(pDX, IDC_MS_SCROLL, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_SCROLLWHEEL)][LOBYTE(ChromaSDK::Mouse::RZLED2_SCROLLWHEEL)]);
+	DDX_Control(pDX, IDC_MS_BKLT, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_BACKLIGHT)][LOBYTE(ChromaSDK::Mouse::RZLED2_BACKLIGHT)]);
+	DDX_Control(pDX, IDC_MS_LOGO, m_Mouse_Buttons[HIBYTE(ChromaSDK::Mouse::RZLED2_LOGO)][LOBYTE(ChromaSDK::Mouse::RZLED2_LOGO)]);
+
 	DDX_Control(pDX, IDC_SELECT, m_Select);
 	DDX_Control(pDX, IDC_DESELECT, m_Deselect);
 	DDX_Control(pDX, IDC_APPLY, m_Apply);
@@ -336,6 +362,11 @@ void KenithalsChromaDlg::OnBnClickedSelect()
 		for (int j = 0; j < ChromaSDK::Keyboard::MAX_COLUMN; j++)
 			if (m_Keyboard_Buttons[i][j])
 				m_Keyboard_Buttons[i][j].SetCheck(1);
+
+	for (int i = 0; i < ChromaSDK::Mouse::MAX_ROW; i++)
+		for (int j = 0; j < ChromaSDK::Mouse::MAX_COLUMN; j++)
+			if (m_Mouse_Buttons[i][j])
+				m_Mouse_Buttons[i][j].SetCheck(1);
 }
 
 void KenithalsChromaDlg::OnBnClickedDeselect()
@@ -344,6 +375,11 @@ void KenithalsChromaDlg::OnBnClickedDeselect()
 		for (int j = 0; j < ChromaSDK::Keyboard::MAX_COLUMN; j++)
 			if(m_Keyboard_Buttons[i][j])
 				m_Keyboard_Buttons[i][j].SetCheck(0);
+
+	for (int i = 0; i < ChromaSDK::Mouse::MAX_ROW; i++)
+		for (int j = 0; j < ChromaSDK::Mouse::MAX_COLUMN; j++)
+			if (m_Mouse_Buttons[i][j])
+				m_Mouse_Buttons[i][j].SetCheck(0);
 }
 
 void KenithalsChromaDlg::OnBnClickedApply()
@@ -357,16 +393,40 @@ void KenithalsChromaDlg::OnBnClickedApply()
 				switch (m_DisplayType.GetCurSel())
 				{
 				case 1:
-					m_ChromaSDKImpl.setKey(i, j, CChromaSDKImpl::Effects::Character, m_Brightness.GetPos());
+					m_ChromaSDKImpl.setKeyboardKey(i, j, CChromaSDKImpl::Effects::Character, m_Brightness.GetPos());
 					break;
 				case 2:
-					m_ChromaSDKImpl.setKey(i, j, CChromaSDKImpl::Effects::Spectrum, m_Brightness.GetPos());
+					m_ChromaSDKImpl.setKeyboardKey(i, j, CChromaSDKImpl::Effects::Spectrum, m_Brightness.GetPos());
 					break;
 				case 3:
-					m_ChromaSDKImpl.setKey(i, j, CChromaSDKImpl::Effects::Static, GetRValue(m_ColorPicker.GetColor()), GetGValue(m_ColorPicker.GetColor()), GetBValue(m_ColorPicker.GetColor()), m_Brightness.GetPos());
+					m_ChromaSDKImpl.setKeyboardKey(i, j, CChromaSDKImpl::Effects::Static, GetRValue(m_ColorPicker.GetColor()), GetGValue(m_ColorPicker.GetColor()), GetBValue(m_ColorPicker.GetColor()), m_Brightness.GetPos());
 					break;
 				default:
-					m_ChromaSDKImpl.setKey(i, j, CChromaSDKImpl::Effects::Off, 0);
+					m_ChromaSDKImpl.setKeyboardKey(i, j, CChromaSDKImpl::Effects::Off, 0);
+				}
+			}
+		}
+	}
+
+	for (int i = 0; i < ChromaSDK::Mouse::MAX_ROW; i++)
+	{
+		for (int j = 0; j < ChromaSDK::Mouse::MAX_COLUMN; j++)
+		{
+			if (m_Mouse_Buttons[i][j] && m_Mouse_Buttons[i][j].GetCheck() == 1)
+			{
+				switch (m_DisplayType.GetCurSel())
+				{
+				case 1:
+					m_ChromaSDKImpl.setMouseKey(i, j, CChromaSDKImpl::Effects::Character, m_Brightness.GetPos());
+					break;
+				case 2:
+					m_ChromaSDKImpl.setMouseKey(i, j, CChromaSDKImpl::Effects::Spectrum, m_Brightness.GetPos());
+					break;
+				case 3:
+					m_ChromaSDKImpl.setMouseKey(i, j, CChromaSDKImpl::Effects::Static, GetRValue(m_ColorPicker.GetColor()), GetGValue(m_ColorPicker.GetColor()), GetBValue(m_ColorPicker.GetColor()), m_Brightness.GetPos());
+					break;
+				default:
+					m_ChromaSDKImpl.setMouseKey(i, j, CChromaSDKImpl::Effects::Off, 0);
 				}
 			}
 		}

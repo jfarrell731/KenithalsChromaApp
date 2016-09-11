@@ -62,8 +62,10 @@ public:
 
 	void setAll(Effects newEffect, int brightness);
 	void setAll(Effects newEffect, int r, int g, int b, int brightness);
-	void setKey(int row, int col, Effects newEffect, int brightness);
-	void setKey(int row, int col, Effects newEffect, int r, int g, int b, int brightness);
+	void setKeyboardKey(int row, int col, Effects newEffect, int brightness);
+	void setKeyboardKey(int row, int col, Effects newEffect, int r, int g, int b, int brightness);
+	void setMouseKey(int row, int col, Effects newEffect, int brightness);
+	void setMouseKey(int row, int col, Effects newEffect, int r, int g, int b, int brightness);
 	void SetPath(std::string newPath);
 	void MainAnimation();
 	void StartAnim();

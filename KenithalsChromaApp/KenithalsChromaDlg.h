@@ -38,6 +38,7 @@ protected:
 public:
 	CEdit m_WOWPATH;
 	CButton m_Keyboard_Buttons[ChromaSDK::Keyboard::MAX_ROW][ChromaSDK::Keyboard::MAX_COLUMN];
+	CButton m_Mouse_Buttons[ChromaSDK::Mouse::MAX_ROW][ChromaSDK::Mouse::MAX_COLUMN];
 	CButton m_Select, m_Deselect, m_Apply, m_Save, m_Load;
 	CComboBox m_DisplayType, m_Profile;
 	CMFCColorButton m_ColorPicker;
